@@ -1,0 +1,186 @@
+#include<iostream>
+#include<stdlib.h>
+using namespace std;
+
+struct node
+{
+    int data;
+    struct node *next;
+};
+
+typedef struct node node;
+
+class linkedList
+{
+    public :
+        void put_node(node **head_ref, int data);
+        node *reverseLL(node *head, node *prv);
+        void deleteNode(node **head_ref, int data);
+};
+
+void linkedList :: put_node(node **head_ref, int data)
+{
+    node *np, *temp;
+
+    temp = *head_ref;
+
+    if(temp == NULL)
+    {
+        np = new node;
+        np -> data = data;
+        np -> next = NULL;
+
+        *head_ref = np;
+    }
+
+    else
+    {
+        while(temp -> next != NULL)
+            temp = temp -> next;
+
+        np = new node;
+        np -> data = data;
+        np -> next = NULL;
+
+        temp -> next = np;
+    }
+}
+
+node *linkedList :: reverseLL(node *head, node *prv)
+{
+    node *temp = head;
+    if(temp != NULL)
+    {
+        node *ptr = temp -> next;
+        temp -> next = prv;
+        prv = temp;
+        temp = ptr;
+        prv = reverseLL(temp, prv);
+    }
+
+    return prv;
+}
+
+void linkedList :: deleteNode(node **head_ref, int data)
+{
+    node *ptr, *prv;
+
+    ptr = *head_ref;
+    prv = NULL;
+
+    if(ptr -> data == data)
+    {
+        *head_ref = ptr -> next;
+        delete(ptr);
+    }
+
+    else
+    {
+        while(ptr -> data != data)
+        {
+            prv = ptr;
+            ptr = ptr -> next;
+        }
+
+        prv -> next = ptr -> next;
+        delete(ptr);
+    }
+}
+
+int main()
+{
+    int i, value, choice, operation;
+    node *head, *ptr;
+    linkedList o;
+
+    head = NULL;
+
+    while(i)
+    {
+        cout << "\nEnter value of the node : ";
+        cin >> value;
+
+        o.put_node(&head, value);
+
+        cout << "\nDo you wish to insert another node?\n1 for YES\n0 for NO\n";
+        cin >> i;
+    }
+
+    ptr = head;
+    cout <<"\nLinked list you entered is : ";
+    while(ptr != NULL)
+    {
+        cout << ptr -> data << " ";
+        ptr = ptr -> next;
+    }
+
+    cout << endl;
+
+    while(choice)
+    {
+        cout << "\nEnter the operation you want to perform : \n1. Print the elements of the Linked List\n2. Reverse the Linked List\n3. Delete a node\n4. Exit\n";
+        cin >> operation;
+
+        switch(operation)
+        {
+            case 1  :
+            {
+                ptr = head;
+                cout << endl;
+                while(ptr != NULL)
+                {
+                    cout << ptr -> data << " ";
+                    ptr = ptr -> next;
+                }
+
+                break;
+            }
+
+            case 2 :
+            {
+                head = o.reverseLL(head, NULL);
+
+                ptr = head;
+                cout << endl << "Reversed Linked List is : ";
+                while(ptr != NULL)
+                {
+                    cout << ptr -> data << " ";
+                    ptr = ptr -> next;
+                }
+
+                break;
+            }
+
+            case 3 :
+            {
+                cout << "\nEnter the value you want to delete : ";
+                cin >> value;
+
+
+                o.deleteNode(&head, value);
+
+                cout << endl << "Linked List is : ";
+                ptr = head;
+                while(ptr != NULL)
+                {
+                    cout << ptr -> data << " ";
+                    ptr = ptr -> next;
+                }
+
+                break;
+            }
+
+            case 4 :
+            {
+                exit(1);
+            }
+
+            cout << "\nDo you wish to perform another operation?\nPress 1 for YES\nPress 0 for NO\n";
+            cin >> choice;
+
+        }
+
+    }
+
+    return 0;
+}
