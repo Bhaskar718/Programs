@@ -1,0 +1,433 @@
+#include<iostream>
+#include<stdlib.h>
+using namespace std;
+
+struct node
+{
+    int data;
+    struct node *left;
+    struct node *right;
+    int key;
+    int value;
+};
+
+typedef struct node node;
+
+class tree
+{
+    public:
+        node *put_node(node *x, int key, int value);
+        void preorder(node *root);
+        void inorder(node *root);
+        void postorder(node *root);
+        node *deleteNode(node *head, int key);
+        node *searchNode(node *head, int key);
+        node *searchParent(node *head, node *ptr);
+        int getMin(node *root, int m);
+        int getMax(node *root, int m);
+        int rankNode(node *x);
+};
+
+node* tree :: put_node(node *x, int key, int value)
+{
+    node *ptr;
+    if(x == NULL)
+    {
+        x = new node;
+        x -> left = NULL;
+        x -> right = NULL;
+        x -> key = key;
+        x -> value = value;
+    }
+
+    else if(x -> key > key)
+        x -> left = put_node(x -> left, key, value);
+
+
+    else if(x -> key < key)
+        x -> right = put_node(x -> right, key, value);
+
+    else
+        x -> value = value;
+
+        return x;
+}
+
+void tree :: preorder(node *root)
+{
+    cout<<root -> key << " ";
+
+    if(root -> left != NULL)
+        preorder(root -> left);
+
+    if(root -> right != NULL)
+        preorder(root -> right);
+}
+
+void tree :: inorder(node *root)
+{
+    if(root -> left != NULL)
+        preorder(root -> left);
+
+    cout<<root -> key << " ";
+
+    if(root -> right != NULL)
+        preorder(root -> right);
+}
+
+void tree :: postorder(node *root)
+{
+    if(root -> left != NULL)
+        preorder(root -> left);
+
+    if(root -> right != NULL)
+        preorder(root -> right);
+
+    cout<<root -> key << " ";
+}
+
+node* tree :: deleteNode(node *root, int key)
+{
+    node *ptr, *prnt;
+
+    if(root == NULL)
+        return NULL;
+
+    ptr = searchNode(root, key);
+    prnt = searchParent(root, ptr);
+
+    if(ptr -> left == NULL && ptr -> right == NULL)
+    {
+        if(prnt -> left == ptr)
+            prnt -> left == NULL;
+
+        else if(prnt -> right == ptr)
+            prnt -> right == NULL;
+
+        delete(ptr);
+        return root;
+    }
+
+    else if((ptr -> left == NULL && ptr -> right != NULL) || (ptr -> left != NULL && ptr -> right == NULL))
+    {
+        if(ptr -> left == NULL && ptr -> right != NULL)
+        {
+            if(prnt != NULL)
+            {
+                if(prnt -> left == ptr)
+                    prnt -> left = ptr -> right;
+
+                else
+                    prnt -> right = ptr -> right;
+
+                delete(ptr);
+            }
+
+            else
+            {
+                root = ptr -> right;
+                delete(ptr);
+            }
+        }
+
+        else if(ptr -> left != NULL && ptr -> right == NULL)
+        {
+            if(prnt != NULL)
+            {
+                if(prnt -> left == ptr)
+                    prnt -> left = ptr -> left;
+
+                else
+                    prnt -> right = ptr -> left;
+
+                delete(ptr);
+            }
+
+            else
+            {
+                root = ptr -> left;
+                delete(ptr);
+            }
+        }
+
+        return root;
+    }
+
+    else if(ptr -> left != NULL && ptr -> right != NULL)
+    {
+        node *temp = ptr -> right -> left;
+
+        if(temp == NULL)
+            temp = ptr -> right;
+
+        if(temp -> left == NULL && temp -> right == NULL)
+        {
+            ptr -> key = temp -> key;
+
+            if(ptr -> left == temp)
+                ptr -> left = NULL;
+
+            else if(ptr -> right == temp)
+                ptr -> right = NULL;
+
+            delete(temp);
+        }
+
+        else if((temp -> left == NULL && temp -> right != NULL) || (temp -> left != NULL && temp -> right == NULL))
+        {
+            node *prnt1 = searchParent(root, temp);
+
+            ptr -> key = temp -> key;
+
+            if(temp -> left != NULL)
+                prnt1 -> left = temp -> left;
+
+            else
+                prnt1 -> left = temp -> right;
+
+            delete(temp);
+        }
+
+        else if(temp -> left != NULL && temp -> right != NULL)
+        {
+            int t = temp -> key;
+            root = deleteNode(root, temp -> key);
+            ptr -> key = t;
+        }
+
+        return root;
+    }
+}
+
+node* tree :: searchNode(node *x, int key)
+{
+    if(x == NULL)
+        return NULL;
+
+    else if(x -> key == key)
+        return x;
+
+    else
+    {
+        node *ptr = searchNode(x -> left, key);
+
+        if(ptr == NULL)
+            ptr = searchNode(x -> right, key);
+
+        return ptr;
+    }
+}
+
+node* tree :: searchParent(node *x, node *ptr)
+{
+    if(x == NULL)
+        return NULL;
+
+    else if(x == ptr)
+        return NULL;
+
+    else if(x -> left == ptr || x -> right == ptr)
+        return x;
+
+    else
+    {
+        node *temp = searchParent(x -> left, ptr);
+
+        if(temp == NULL)
+            temp = searchParent(x -> right, ptr);
+
+        return temp;
+    }
+}
+
+int tree :: getMin(node *x, int m)
+{
+    int l, r;
+
+    if(x != NULL)
+    {
+        if(x -> value < m)
+            m = x -> value;
+
+        l = getMin(x -> left, m);
+        r = getMin(x -> right, m);
+
+        if(l < m)
+            m = l;
+
+        else if(r < m)
+            m = r;
+    }
+
+    return m;
+}
+
+int tree :: getMax(node *x, int m)
+{
+    int l, r;
+
+    if(x != NULL)
+    {
+        if(x -> value > m)
+            m = x -> value;
+
+        l = getMax(x -> left, m);
+        r = getMax(x -> right, m);
+
+        if(l > m)
+            m = l;
+
+        else if(r > m)
+            m = r;
+    }
+
+    return m;
+}
+
+int tree :: rankNode(node *x)
+{
+    if(x == NULL)
+        return 0;
+
+    int l = rankNode(x -> left);
+    int r = rankNode(x -> right);
+
+    return (l + r + 1);
+}
+
+int main()
+{
+    node *root, *ptr;
+    tree t;
+    int i, key, value, mn, mx, r, n, choice;
+
+    root = NULL;
+    i = 1;
+    choice = 1;
+
+    while(i)
+    {
+        cout << "\nEnter key : ";
+        cin >> key;
+
+        cout << "\nEnter value : ";
+        cin >> value;
+
+        root = t.put_node(root, key, value);
+
+        cout << "\nDo you wish to insert another node?\n1 for YES\n0 for NO\n";
+        cin >> i;
+    }
+
+    cout << "\nPreorder traversal is : ";
+    t.preorder(root);
+
+    while(choice)
+    {
+        cout << "\nEnter the operation : \n1. Pre-order taversal\n2. In-order traversal\n3. Post-order traversal\n4. getMin\n5. getMax\n6. Delete a node\n7. Rank of a node\n8. Search a node\n9. Exit\n";
+        cin >> i;
+
+        switch(i)
+        {
+            case 1 :
+                {
+                    cout << "\nPreorder traversal is : ";
+                    t.preorder(root);
+                    cout << "\n";
+
+                    break;
+                }
+
+            case 2 :
+                {
+                    cout << "\nInorder traversal is : ";
+                    t.inorder(root);
+                    cout << "\n";
+
+                    break;
+                }
+
+            case 3 :
+                {
+                    cout << "\nPost - order traversal is : ";
+                    t.postorder(root);
+                    cout << "\n";
+
+                    break;
+                }
+
+            case 4 :
+                {
+                    mn = t.getMin(root, root -> value);
+                    cout << "\n\nMinimum value = ";
+                    cout << mn;
+
+                    break;
+                }
+
+            case 5 :
+                {
+                    mx = t.getMax(root, root -> value);
+                    cout << "\n Maximum value = ";
+                    cout << mx;
+
+                    break;
+                }
+
+            case 6 :
+                {
+                    cout << "\nEnter the key of the node you want to delete : ";
+                    cin >> n;
+
+                    root = t.deleteNode(root, n);
+
+                    cout << "\nPreorder traversal is : ";
+                    t.preorder(root);
+
+                    break;
+                }
+
+            case 7 :
+                {
+                    cout << "\nEnter the key of the node whose rank you want to find : ";
+                    cin >> n;
+
+                    ptr = t.searchNode(root, n);
+                    if(ptr != NULL)
+                    {
+                        r = t.rankNode(ptr -> left);
+                        cout << "\nRank of the node is : " << r + 1;
+                    }
+
+                    else
+                        cout << "\nKey not found!!";
+
+                    break;
+                }
+
+            case 8 :
+                {
+                    cout << "\nEnter the key of the node you want to search : ";
+                    cin >> n;
+                    ptr = t.searchNode(root, n);
+
+                    if(ptr != NULL)
+                        cout << "\nKey is found";
+
+                    else
+                        cout << "\nKey is not found";
+
+                    break;
+                }
+            case 9 :
+                {
+                    exit(1);
+                }
+        }
+
+        cout << "\nDo you wish to perform another operation?\nPress 1 for YES\nPress 0 for NO\n";
+        cin >> choice;
+    }
+
+    return 0;
+}
