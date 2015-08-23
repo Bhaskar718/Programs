@@ -1,0 +1,78 @@
+#include<iostream>
+using namespace std;
+
+struct node
+{
+    int data;
+    struct node *next;
+};
+
+typedef struct node node;
+
+void put_node(node **head_ref, int data);
+
+int main()
+{
+    int i, data;
+    node *head, *ptr;
+
+    head = NULL;
+
+    cout << "\nEnter the value to be put in queue : ";
+    cin >> data;
+
+    put_node(&head, data);
+
+    cout << "\nDo you wish to continue?\nPress 1 for YES\nPress 0 for NO\n";
+    cin >> i;
+
+    while(i)
+    {
+        cout << "\nEnter the value to be put in queue : ";
+        cin >> data;
+
+        put_node(&head, data);
+
+        cout << "\nDo you wish to continue?\nPress 1 for YES\nPress 0 for NO\n";
+        cin >> i;
+    }
+
+    ptr = head;
+    cout << "\nThe values are removed as : \n";
+
+    while(ptr != NULL)
+    {
+        cout << ptr -> data << " ";
+        ptr = ptr -> next;
+    }
+
+    return  0;
+}
+
+void put_node(node **head_ref, int data)
+{
+    node *np, *temp;
+
+    temp = *head_ref;
+
+    if(temp == NULL)
+    {
+        np = new node;
+        np -> data = data;
+        np -> next = NULL;
+
+        *head_ref = np;
+    }
+
+    else
+    {
+        while(temp -> next != NULL)
+            temp = temp -> next;
+
+        np = new node;
+        np -> data = data;
+        np -> next = NULL;
+
+        temp -> next = np;
+    }
+}
