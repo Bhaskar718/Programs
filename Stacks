@@ -1,0 +1,91 @@
+#include<iostream>
+using namespace std;
+
+struct node
+{
+    int data;
+    struct node *next;
+};
+
+typedef struct node node;
+
+node *put_node(node *stck, int data);
+
+int main()
+{
+    int i, data, a[30];
+    node *stck, *ptr;
+    i = 1;
+
+    stck = NULL;
+
+    cout << "\nEnter the value to be put in stack : ";
+    cin >> data;
+
+    stck = put_node(stck, data);
+
+    cout << "\nDo you wish to continue?\nPress 1 for YES\nPress 0 for NO\n";
+    cin >> i;
+    ptr = stck;
+
+    while(i)
+    {
+        cout << "\nEnter the value to be put in stack : ";
+        cin >> data;
+
+        ptr -> next = put_node(stck, data);
+        ptr = ptr -> next;
+
+        cout << "\nDo you wish to continue?\nPress 1 for YES\nPress 0 for NO\n";
+        cin >> i;
+    }
+
+    ptr = stck;
+    i = 0;
+
+    while(ptr != NULL)
+    {
+        a[i] = ptr -> data;
+        i++;
+        ptr = ptr -> next;
+    }
+
+    i--;
+
+    cout << "\nThe values are removed as : \n";
+
+    while(i >= 0)
+    {
+        cout << a[i] << " ";
+        i--;
+    }
+
+    return 0;
+}
+
+node *put_node(node *stck, int data)
+{
+    node *temp, *np;
+    temp = stck;
+
+    if(temp == NULL)
+    {
+        np = new node;
+        np -> data = data;
+        np -> next = NULL;
+        temp = np;
+    }
+
+    else
+    {
+        while(temp -> next != NULL)
+            temp = temp -> next;
+
+        np = new node;
+        np -> data = data;
+        np -> next = NULL;
+        temp -> next = np;
+    }
+
+    return np;
+}
