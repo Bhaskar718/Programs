@@ -1,0 +1,185 @@
+#include<iostream>
+#include<cstdlib>
+#include<cstdio>
+
+
+using namespace std;
+
+class HashNode
+{
+    public :
+        int key;
+        int value;
+        HashNode *next;
+        HashNode(int key, int value)
+        {
+            this -> key = key;
+            this -> value = value;
+            this -> next = NULL;
+        }
+};
+
+class HashTable
+{
+    private :
+        HashNode **Hash_Table;
+
+    public :
+        HashTable()
+        {
+            Hash_Table = new HashNode * [10];
+            for(int i = 0; i < 10; i++)
+                Hash_Table[i] = NULL;
+        }
+
+        int HashFunc(int key)
+        {
+            return (key % 10);
+        }
+
+        void insert_key(int key, int value)
+        {
+            int pos = HashFunc(key);
+            HashNode *prev = NULL;
+            HashNode *ptr = Hash_Table[pos];
+
+            while(ptr != NULL)
+            {
+                prev = ptr;
+                ptr = ptr -> next;
+            }
+
+            if(ptr == NULL)
+            {
+                ptr = new HashNode(key, value);
+
+                if(prev == NULL)
+                {
+                    Hash_Table[pos] = ptr;
+                }
+
+                else
+                    prev -> next = ptr;
+            }
+
+            cout << "\nKey and value is inserted";
+        }
+
+        int delete_key(int key)
+        {
+            int pos = HashFunc(key);
+            HashNode *prev = NULL;
+            HashNode *ptr = Hash_Table[pos];
+
+            if(ptr == NULL)
+            {
+                cout << "\nWrong key";
+                return 0;
+            }
+
+            while(ptr -> key != key && ptr != NULL)
+            {
+                prev = ptr;
+                ptr = ptr -> next;
+            }
+
+            if(ptr -> key == key)
+            {
+                if(prev != NULL)
+                {
+                    prev -> next = ptr -> next;
+                    delete ptr;
+                    cout << "\nKey deleted";
+                }
+
+                else
+                {
+                    Hash_Table[pos] = ptr -> next;
+                    delete ptr;
+                    cout << "\nKey deleted";
+                }
+            }
+
+            else if(ptr == NULL)
+                cout << "\nKey not found";
+
+            return 0;
+        }
+
+        int search_key(int key)
+        {
+            int pos = HashFunc(key);
+            HashNode *prev = NULL;
+            HashNode *ptr = Hash_Table[pos];
+
+            if(ptr == NULL)
+            {
+                cout << "\nWrong key";
+                return 0;
+            }
+
+            while(ptr != NULL && ptr -> key != key)
+            {
+                prev = ptr;
+                ptr = ptr -> next;
+            }
+
+            if((ptr != NULL )&& ptr -> key == key)
+            {
+                cout << "\nKey found";
+            }
+
+            else
+                cout << "\nKey not found";
+
+            return 0;
+        }
+};
+
+int main()
+{
+    HashTable t;
+    int key, value, i, x;
+
+    i = 1;
+
+    while(i)
+    {
+        cout << "\n\nChoose the operation :\n1. Insert into HashTable\n2. Search a key in Hashtable\n3. Delete a key in HashTable\n4. Exit\n";
+        cin >> x;
+
+        switch(x)
+        {
+            case 1 :
+            {
+                cout <<"\nEnter key : ";
+                cin >> key;
+                cout << "\nEnter value : ";
+                cin >> value;
+                t.insert_key(key, value);
+                break;
+            }
+
+            case 2 :
+            {
+                cout << "\nEnter the key you want to search : ";
+                cin >> key;
+                t.search_key(key);
+                break;
+            }
+
+            case 3 :
+            {
+                cout << "\nEnter the key you want to delete : ";
+                cin >> key;
+                t.delete_key(key);
+                break;
+            }
+
+            case 4 :
+                exit(1);
+        }
+    }
+
+    return 0;
+}
